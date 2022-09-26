@@ -5,73 +5,37 @@
 #include "Config.h"
 #include "Stack.h"
 
+static void StackPushN(Stack* stack, size_t n);
+static void FillStack (Stack* stack);
+static void StackPopN (Stack* stack, size_t n);
+static void CleanStack(Stack* stack);
+
+
 int main()
 {
     Stack stk1 = {};
     Stack stk2 = {};
 
-    // StackDump(&stk1);
-
-    // StackDump(&stk1);
     StackCtor(stk1);
     StackCtor(stk2);
-    // StackCtor(stk2);
+    // StackCtor(stk1;
 
+    // stk1.capacity = 0;
+    // stk1.size = -1;
+    // stk1.data=NULL;
+    // StackPushN(&stk1, 13);
+    // StackDump(&stk1);
     // FillStack(&stk1);
-    // StackPush(&stk1, 8);
-    // StackPush(&stk1, 12);
-    // StackDump(&stk1);
-    // StackPushN(&stk1, 4);
-    // StackDump(&stk1);
-    // StackDump(&stk1);
-    // StackCtor(stk1);
     // StackDump(&stk1);
 
-//     StackPushN(&stk1, 74);
-//     StackDump(&stk1);
-//
-//     StackPushN(&stk1, 15);
-//     StackDump(&stk1);
-//
-//     StackPopN(&stk1, 45);
-//     StackDump(&stk1);
 
     StackDtor(&stk1);
     StackDtor(&stk2);
 
+    // StackPush(&stk1, 78);
     // StackDtor(&stk1);
 
-    // StackPop(&stk1);
-    // StackDump(&stk1);
-    // StackCtor(stk1);
-
-    // StackDump(&stk1);
-
-//     StackDump(&stk1);
-//     StackDump(&stk2);
-
     return 0;
-}
-
-
-void print_stack_elem(int elem)
-{
-    printf("%d", elem);
-}
-
-void print_stack_elem(float elem)
-{
-    printf("%f", elem);
-}
-
-void print_stack_elem(char elem)
-{
-    printf("%c", elem);
-}
-
-void print_stack_elem(char* elem)
-{
-    printf("%s", elem);
 }
 
 
@@ -81,36 +45,36 @@ int StackError(Stack* stack)
 
     if (stack->status == N_INIT_STATUS)
     {
-        err |= MASKS[0];
+        err |= masks[0];
         return err;
     }
 
     if (stack->status == DELETED_STATUS)
     {
-        err |= MASKS[1];
+        err |= masks[1];
         return err;
     }
 
     if (stack->status == ALR_INIT_STATUS)
     {
-        err |= MASKS[2];
+        err |= masks[2];
         return err;
     }
 
     if (stack == NULL)
-        err |= MASKS[3];
+        err |= masks[3];
 
     if (stack->size > stack->capacity)
-        err |= MASKS[4];
+        err |= masks[4];
 
     if (stack->capacity < MIN_CAPACITY)
-        err |= MASKS[5];
+        err |= masks[5];
 
     if (stack->size < 0)
-        err |= MASKS[6];
+        err |= masks[6];
 
     if (stack->data == nullptr)
-        err |= MASKS[7];
+        err |= masks[7];
 
     if (err)
         stack->status = ERROR_STATUS;
@@ -120,29 +84,9 @@ int StackError(Stack* stack)
 
 void DecodeError(int error)
 {
-    if (error & MASKS[0])
-        fprintf(stderr, KYEL "STACK WASN'T INITIALIZED\n" KNRM);
-
-    else if (error & MASKS[1])
-        fprintf(stderr, KYEL "STACK DOESN'T EXIST (DELETED)\n" KNRM);
-
-    else if (error & MASKS[2])
-        fprintf(stderr, KYEL "STACK WAS ALREADY INITIALIZED\n" KNRM);
-
-    if (error & MASKS[3])
-        fprintf(stderr, KYEL "STACK EQUALS NULL\n" KNRM);
-
-    if (error & MASKS[4])
-        fprintf(stderr, KYEL "STACK OVERFLOW\n" KNRM);
-
-    if (error & MASKS[5])
-        fprintf(stderr, KYEL "STACK UNDERFLOW (CAPACITY < MIN_CAPACITY)\n" KNRM);
-
-    if (error & MASKS[6])
-        fprintf(stderr, KYEL "STACK UNDERFLOW (SIZE < 0)\n" KNRM);
-
-    if (error & MASKS[7])
-        fprintf(stderr, KYEL "DATA EQUALS NULL\n" KNRM);
+    for (int i = 0; i < 8; i++)
+        if (error & masks[i])
+            fprintf(stderr, "%s", errors[i]);
 }
 
 void StackDump(Stack* stack)
@@ -158,7 +102,7 @@ void StackDump(Stack* stack)
 
     for (int i = 0; i < stack->capacity; i++)
 
-        if (stack->data[i] != POISONED)
+        if (stack->data[i] != stack->poisoned)
         {
             printf("        *[%d] = " KMAG, i);
             print_stack_elem(stack->data[i]);
@@ -179,7 +123,7 @@ void StackDump(Stack* stack)
 void FillPoisons(Stack* stack, size_t start_index)
 {
     for (size_t i = start_index; i < stack->capacity; i++)
-        stack->data[i] = POISONED;
+        stack->data[i] = stack->poisoned;
 }
 
 void StackCtor_(Stack* stack)
@@ -196,7 +140,13 @@ void StackCtor_(Stack* stack)
         stack->data     = (Elem_t*) calloc(MIN_CAPACITY, sizeof(Elem_t));
         stack->capacity = MIN_CAPACITY;
         stack->size     = (size_t) 0;
+
+        Elem_t poisoned_elem = (Elem_t) NULL;
+        poisoned(&poisoned_elem);
+        stack->poisoned = poisoned_elem;
+
         FillPoisons(stack, 0);
+
         stack->status   = OK_STATUS;
     }
 
@@ -209,6 +159,7 @@ void StackCtor_(Stack* stack)
 void StackDtor(Stack* stack)
 {
     ASSERT(stack != NULL);
+    ASSERT_OK(stack);
 
     if (stack->status != DELETED_STATUS)
     {
@@ -236,7 +187,7 @@ Elem_t StackPop(Stack* stack, int* err)
     if (stack->size > 0)
     {
         popped = stack->data[stack->size - 1];
-        stack->data[stack->size - 1] = POISONED;
+        stack->data[stack->size - 1] = stack->poisoned;
 
         if ((stack->capacity / stack->size-- >= 2) && (stack->capacity > MIN_CAPACITY))
             StackRealloc(stack, stack->capacity / 2);
@@ -250,15 +201,28 @@ Elem_t StackPop(Stack* stack, int* err)
     return popped;
 }
 
+int CheckElem(Stack* stack, Elem_t value)
+{
+    return !(sizeof(stack->poisoned) - sizeof(value));
+}
+
 void StackPush(Stack* stack, const Elem_t value)
 {
     ASSERT_OK(stack);
 
-    if (stack->size >= stack->capacity)
-        StackRealloc(stack, stack->capacity * 2);
-        FillPoisons(stack, stack->size + 1);
+    if (CheckElem(stack, value))
+    {
+        if (stack->size >= stack->capacity)
+            StackRealloc(stack, stack->capacity * 2);
+            FillPoisons(stack, stack->size + 1);
 
-    stack->data[stack->size++] = value;
+        stack->data[stack->size++] = value;
+    }
+    else
+    {
+        fprintf(stderr, "%s", errors[8]);
+        abort();
+    }
 
     ASSERT_OK(stack);
 }
@@ -267,9 +231,7 @@ void StackPush(Stack* stack, const Elem_t value)
 static void StackPushN(Stack* stack, size_t n)
 {
     for (size_t i = 1; i <= n; i++)
-    {
-        StackPush(stack, rand());
-    }
+        StackPush(stack, (Elem_t) NULL);
 }
 
 static void FillStack(Stack* stack)

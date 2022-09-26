@@ -33,6 +33,7 @@
                      __PRETTY_FUNCTION__, __FILE__, __LINE__);                 \
             DecodeError(err);                                                  \
             StackDump(stack_ptr);                                              \
+            abort();                                                           \
         }                                                                      \
                                                                                \
         else                                                                   \

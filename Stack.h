@@ -3,25 +3,6 @@
 
 #include "Config.h"
 
-// void create_masks(int masks[])
-// {
-//     for (int i = 0, num = 1; i < 8; i++)
-//     {
-//         num <<= 1;
-//         masks[i] = num - 1;
-//     }
-// }
-//
-// int masks[8] = {};
-// create_masks(masks);
-
-const int masks[8] = {1, 2, 4, 8, 16, 32, 64, 128};
-const char* errors = {};
-
-#define MASKS     masks
-#define INIT_MASK 254
-#define DEL_MASK  253
-
 struct StackInfo
 {
     char*       name     = UNDEFINED_NAME;
@@ -36,6 +17,7 @@ struct Stack
     size_t      size;
     size_t      capacity;
     StackInfo   info;
+    Elem_t      poisoned;
     const char* status = N_INIT_STATUS;
 };
 
@@ -47,11 +29,50 @@ void   StackCtor_   (Stack* stack);
 void   StackDtor    (Stack* stack);
 void   StackRealloc (Stack* stack, int direction);
 Elem_t StackPop     (Stack* stack, int* err = NULL);
+int    CheckElem    (Stack* stack, Elem_t value);
 void   StackPush    (Stack* stack, const Elem_t value);
 
-static void StackPushN(Stack* stack, size_t n);
-static void FillStack (Stack* stack);
-static void StackPopN (Stack* stack, size_t n);
-static void CleanStack(Stack* stack);
+
+void print_stack_elem(int elem)
+{
+    printf("%d", elem);
+}
+
+void print_stack_elem(float elem)
+{
+    printf("%f", elem);
+}
+
+void print_stack_elem(char elem)
+{
+    printf("%c", elem);
+}
+
+void print_stack_elem(char* elem)
+{
+    printf("%s", elem);
+}
+
+
+void poisoned(int* elem)
+{
+    *elem = int_poisoned;
+}
+
+void poisoned(float* elem)
+{
+    *elem = float_poisoned;
+}
+
+void poisoned(char* elem)
+{
+    *elem = char_poisoned;
+}
+
+void poisoned(char** elem)
+{
+    *elem = char_ptr_poisoned;
+}
+
 
 #endif
