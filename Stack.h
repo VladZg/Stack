@@ -2,11 +2,11 @@
 #define STACK_H
 
 #include "Config.h"
+#include "Log.h"
 
 struct StackInfo
 {
     char*       name     = UNDEFINED_NAME;
-    // char*  function_name;
     const char* filename = __FILE__;
     int         line     = UNDEFINED_LINE;
 };
@@ -17,8 +17,8 @@ struct Stack
     size_t      size;
     size_t      capacity;
     StackInfo   info;
-    Elem_t      poisoned;
     const char* status = N_INIT_STATUS;
+    size_t      hash;
 };
 
 void   DecodeError  (int error);
@@ -31,6 +31,9 @@ void   StackRealloc (Stack* stack, int direction);
 Elem_t StackPop     (Stack* stack, int* err = NULL);
 int    CheckElem    (Stack* stack, Elem_t value);
 void   StackPush    (Stack* stack, const Elem_t value);
+size_t Hash         (const void* obj, size_t n);
+void   SetStackHash (Stack* stack);
+void   CheckHash    (Stack* stack);
 
 
 void print_stack_elem(int elem)

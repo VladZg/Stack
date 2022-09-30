@@ -3,6 +3,7 @@
 
 // #define NDEBUG
 #include "ColourConsts.h"
+#include "Log.h"
 
 typedef int Elem_t;
 
@@ -14,7 +15,7 @@ static const char* statuses[] = {
                                 KRED "ALREDY INITIALIZED" KNRM
                                 };
 
-// void create_masks(int masks[])
+// void create_masks(int* masks)
 // {
 //     for (int i = 0, num = 1; i < 8; i++)
 //     {
@@ -27,6 +28,17 @@ static const char* statuses[] = {
 // create_masks(masks);
 
 const int   masks[8]          = {1, 2, 4, 8, 16, 32, 64, 128};
+
+// enum        errors            = {
+//                                  STACK_WASNT_INIT         = 1;
+//                                  STACK_DELETED            = 2;
+//                                  STACK_ALR_INIT           = 4;
+//                                  STACK_OVERFLOW           = 8;
+//                                  STACK_UNDERFLOW_CAPACITY = 16;
+//                                  STACK_UNDERFLOW_SIZE     = 32;
+//                                  STACK_DATA_NULL          = 64;
+//                                  WRONG_PUSH_DATA          = 128;
+//                                 };
 
 const char* errors[]          = {
                                 KYEL "STACK WASN'T INITIALIZED\n"                  KNRM,

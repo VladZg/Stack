@@ -1,10 +1,9 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#include "ColourConsts.h"
 #include "Config.h"
 #include "Stack.h"
-
+#include "Log.h"
 
 # ifndef NDEBUG
 
@@ -25,6 +24,8 @@
 
     #define ASSERT_OK( stack_ptr )                                             \
     {                                                                          \
+        CheckHash(stack_ptr);                                                  \
+                                                                               \
         int err = StackError(stack_ptr);                                       \
                                                                                \
         if (err)                                                               \
@@ -38,6 +39,8 @@
                                                                                \
         else                                                                   \
             stack_ptr->status = OK_STATUS;                                     \
+                                                                               \
+        SetStackHash(stack_ptr);                                               \
     }
 
 #else
@@ -51,6 +54,7 @@
         {                                                                      \
             StackCtor_(&stack);                                                \
             stack.info = {(char*) #stack, __FILE__, (size_t) __LINE__};        \
+            SetStackHash(&stack);                                              \
         }
 
 #endif
