@@ -32,11 +32,12 @@ FILE* OpenLog()
     return log_file;
 }
 
+// extern FILE* LOG_FILE;
 FILE* LOG_FILE  = OpenLog();
 
 void WriteLog(const char* data)
 {
-    fputs(data, LOG_FILE);
+    fprintf(LOG_FILE, "%s", data);
 }
 
 void CloseLog()

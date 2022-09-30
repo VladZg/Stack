@@ -20,18 +20,21 @@ int main()
     StackCtor(stk2);
     StackCtor(stk1);
 
-    // StackPushN(&stk1, 19);
-    // StackDump(&stk1);
-    // stk1.size = 1;
-    // stk1.data[4] = 888;
-    // StackPush(&stk1, TEST_CHAR_PTR);
-    // StackPush(&stk1, TEST_CHAR_PTR);
-
+    StackPushN(&stk1, 19);
     StackDump(&stk1);
+    // stk1.capacity = 3;
+    // stk1.size = 6;
+
+    // StackPushN(&stk1, 12);
+    // StackPush(&stk1, TEST_INT);
+
+    // StackDump(&stk1);
 
     // stk1.size = 3;
     // StackPopN(&stk1, 56);
-    // StackPush(&stk1, 89);
+    // StackPush(&stk1, TEST_CHAR_PTR);
+    // FillStack(&stk1);
+    // StackPush(&stk1, TEST_CHAR_PTR);
     // StackDump(&stk1);
 
     StackDtor(&stk1);
@@ -41,6 +44,7 @@ int main()
     // StackDump(&stk2);
 
     // StackPush(&stk1, 2);
+    // StackDtor(&stk1);
 
     return 0;
 }

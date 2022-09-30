@@ -25,19 +25,19 @@
     {                                                                          \
         CheckHash(stack_ptr);                                                  \
                                                                                \
-        int err = StackError(stack_ptr);                                       \
+        size_t err = StackError(stack_ptr);                                    \
                                                                                \
         if (err)                                                               \
         {                                                                      \
             fprintf(stderr, KRED "ERROR " KNRM "in \"%s\" at \"%s\"(%d)\n",    \
                      __PRETTY_FUNCTION__, __FILE__, __LINE__);                 \
-            DecodeError(err);                                                  \
+            StackDecodeErrors(err);                                            \
             StackDump(stack_ptr);                                              \
             abort();                                                           \
         }                                                                      \
                                                                                \
         else                                                                   \
-            stack_ptr->status = OK_STATUS;                                     \
+            stack_ptr->status = STK_OK_STATUS;                                 \
                                                                                \
         SetStackHash(stack_ptr);                                               \
     }

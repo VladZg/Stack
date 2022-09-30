@@ -3,74 +3,40 @@
 
 #include "ColourConsts.h"
 
-static const char* statuses[] = {
-                                KGRN "OK"                 KNRM,
-                                KRED "DELETED"            KNRM,
-                                KRED "NOT INITIALIZED"    KNRM,
-                                KRED "ERROR"              KNRM,
-                                KRED "ALREDY INITIALIZED" KNRM,
-                                KRED "DAMAGED"            KNRM
-                                };
+enum {
+      STK_OK_STATUS        = 1,
+      STK_DEL_STATUS       = 2,
+      STK_N_INIT_STATUS    = 4,
+      STK_ERR_STATUS       = 8,
+      STK_ALR_INIT_STATUS  = 16,
+      STK_DAMAGED_STATUS   = 32,
 
-// void create_masks(int* masks)
-// {
-//     for (int i = 0, num = 1; i < 8; i++)
-//     {
-//         num <<= 1;
-//         masks[i] = num;
-//     }
-// }
-//
-// int masks[8] = {};
-// create_masks(masks);
+      STK_N_INIT_ERR       = 1,
+      STK_N_EXIST_ERR      = 2,
+      STK_ALR_INIT_ERR     = 4,
+      STK_IS_NULL_ERR      = 8,
+      STK_OVERFLOW_ERR     = 16,
+      STK_UNDERFLOW_ERR    = 32,
+      CHANGED_CANARY_ERR   = 64,
+      STK_DATA_IS_NULL_ERR = 128,
 
-const int   masks[8]          = {1, 2, 4, 8, 16, 32, 64, 128};
+      STK_INIT_MASK        = 254,
+      STK_DEL_MASK         = 253,
 
-// enum        errors            = {
-//                                  STACK_WASNT_INIT         = 1;
-//                                  STACK_DELETED            = 2;
-//                                  STACK_ALR_INIT           = 4;
-//                                  STACK_OVERFLOW           = 8;
-//                                  STACK_UNDERFLOW_CAPACITY = 16;
-//                                  STACK_UNDERFLOW_SIZE     = 32;
-//                                  STACK_DATA_NULL          = 64;
-//                                  WRONG_PUSH_DATA          = 128;
-//                                 };
+      LEFT_CANARY          = 0xBCBCBC,
+      RIGHT_CANARY         = 0xCBCBCB,
 
-const char* ERRORS[]          = {
-                                KYEL "STACK WASN'T INITIALIZED\n"                  KNRM,
-                                KYEL "STACK DOESN'T EXIST (DELETED)\n"             KNRM,
-                                KYEL "STACK WAS ALREADY INITIALIZED\n"             KNRM,
-                                KYEL "STACK EQUALS NULL\n"                         KNRM,
-                                KYEL "STACK OVERFLOW\n"                            KNRM,
-                                KYEL "STACK UNDERFLOW (CAPACITY < MIN_CAPACITY)\n" KNRM,
-                                KYEL "STACK UNDERFLOW (SIZE < 0)\n"                KNRM,
-                                KYEL "DATA EQUALS NULL\n"                          KNRM,
-                                KYEL "STACK IS DAMAGED\n"                          KNRM
-                                };
+      UNDEFINED_LINE       = -1,
+      MIN_CAPACITY         = 10
+     };
 
-char    undefined_name[]    = KRED "?" KNRM;
-int     int_poisoned        = 0xBADDED;
-char    char_ptr_poisoned[] = "poisoned";
-char    char_poisoned       = '\?';
-float   float_poisoned      = 13.37;
+const  int   int_poisoned        = 0xBADDED;
+const  char  char_ptr_poisoned[] = "poisoned";
+const  char  char_poisoned       = '\?';
+const  float float_poisoned      = 13.37;
 
-size_t   INIT_MASK           = 254;
-size_t   DEL_MASK            = 253;
+static char  undefined_name[]    = KRED "?" KNRM;
 
-#define UNDEFINED_NAME    undefined_name
-#define UNDEFINED_LINE    -1
-#define MIN_CAPACITY      10
-#define OK_STATUS         statuses[0]
-#define DELETED_STATUS    statuses[1]
-#define N_INIT_STATUS     statuses[2]
-#define ERROR_STATUS      statuses[3]
-#define ALR_INIT_STATUS   statuses[4]
-#define DAMAGED_STATUS    statuses[5]
-
-// enum {
-//       LEFT_CANARY  = 0xCFFEE,
-//       RIGHT_CANARY = 0xCFFE
-//      } canaries;
+#define UNDEFINED_NAME undefined_name
 
 #endif

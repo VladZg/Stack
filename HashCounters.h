@@ -10,9 +10,9 @@ uint32_t HashCounter(const void* obj, uint32_t len, uint32_t seed)
     static const uint32_t c1 = 0xcc9e2d51;
     static const uint32_t c2 = 0x1b873593;
     static const uint32_t r1 = 15;
-    static const uint32_t r2 = 13;
-    static const uint32_t m = 5;
-    static const uint32_t n = 0xe6546b64;
+    // static const uint32_t r2 = 13;
+    // static const uint32_t m = 5;
+    // static const uint32_t n = 0xe6546b64;
 
     uint8_t hash = seed;
     int n_blocks = len / 4;

@@ -4,6 +4,8 @@
 #include "Stack.h"
 #include "Config.h"
 
+#ifndef RELEASE_MODE
+
 void StackPushN(Stack* stack, size_t n)
 {
     for (size_t i = 1; i <= n; i++)
@@ -25,5 +27,14 @@ void CleanStack(Stack* stack)
 {
     StackPopN(stack, stack->size);
 }
+
+#else
+
+void StackPushN(Stack* stack, size_t n) {}
+void FillStack(Stack* stack) {}
+void StackPopN(Stack* stack, size_t n) {}
+void CleanStack(Stack* stack) {}
+
+#endif
 
 #endif

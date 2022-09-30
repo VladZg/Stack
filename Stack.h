@@ -15,19 +15,23 @@ struct StackInfo
 
 struct Stack
 {
-    Elem_t*     data;
-    size_t      size;
-    size_t      capacity;
-    StackInfo   info;
-    const char* status = N_INIT_STATUS;
-    uint32_t    hash;
+    // size_t      left_canary;
+    Elem_t*   data;
+    size_t    size;
+    size_t    capacity;
+    StackInfo info;
+    size_t    status = STK_N_INIT_STATUS;
+    uint32_t  hash;
+    // size_t      right_canary;
 };
 
 
-int    StackError   (Stack* stack);
-void   DecodeError  (int error);
-void   StackDump    (Stack* stack);
-Elem_t StackPop     (Stack* stack, int* err = NULL);
+size_t StackError        (Stack* stack);
+void   StackPrintError   (size_t error, size_t* mask, const char* error_msg);
+void   StackDecodeErrors (size_t error);
+void   StackDecodeStatus (size_t status);
+void   StackDump         (Stack* stack);
+Elem_t StackPop          (Stack* stack, int* err = NULL);
 
 
 #ifndef N_HASH_PROTECTION
@@ -44,35 +48,46 @@ void CheckHash(Stack* stack)
 {
     ASSERT(stack != NULL);
 
+    if (stack->status == STK_N_INIT_STATUS)
+        SetStackHash(stack);
+
     uint32_t hash_temp = stack->hash;
 
     SetStackHash(stack);
 
     if (stack->hash - hash_temp)
     {
-        stack->status = DAMAGED_STATUS;
-        fprintf(stderr, "%s", ERRORS[8]);
-        DecodeError(StackError(stack));
+        stack->status = STK_DAMAGED_STATUS;
+
+        printf(KYEL "STACK IS DAMAGED\n" KNRM);
+        StackDecodeErrors(StackError(stack));
         StackDump(stack);
+
         abort();
     }
 }
 
 #else
-void SetStackHash(Stack* stack)
-{
-    ;
-}
-
-void CheckHash(Stack* stack)
-{
-    ;
-}
+void SetStackHash(Stack* stack) {}
+void CheckHash(Stack* stack) {}
 
 #endif
 
 #ifndef N_CANARY_PROTECTION
+
+size_t CheckCanaries(Stack* stack)
+{
+    return !((stack->left_canary - LEFT_CANARY)  | (stack->right_canary - RIGHT_CANARY))
+}
+
 #else
+
+size_t CheckCanaries(Stack* stack)
+{
+
+    return 1;
+}
+
 #endif
 
 void print_stack_elem(int elem)
@@ -98,104 +113,146 @@ void print_stack_elem(char* elem)
 
 void poisoned(int* elem)
 {
-    *elem = int_poisoned;
+    int tmp_int_poisoned = (int) int_poisoned;
+    *elem = tmp_int_poisoned;
 }
 
 void poisoned(float* elem)
 {
-    *elem = float_poisoned;
+    float tmp_float_poisoned = (float) float_poisoned;
+    *elem = tmp_float_poisoned;
 }
 
 void poisoned(char* elem)
 {
-    *elem = char_poisoned;
+    char tmp_char_poisoned = (char) char_poisoned;
+    *elem = tmp_char_poisoned;
 }
 
 void poisoned(char** elem)
 {
-    *elem = char_ptr_poisoned;
+    char* tmp_char_ptr_poisoned = (char*) char_ptr_poisoned;
+    *elem = tmp_char_ptr_poisoned;
 }
 
 
-int StackError(Stack* stack)
+size_t StackError(Stack* stack)
 {
-    int err = 0;
+    size_t err = 0;
 
-    if (stack->status == N_INIT_STATUS)
+    if (stack->status == STK_N_INIT_STATUS)
     {
-        err |= masks[0];
+        err |= STK_N_INIT_ERR;
         return err;
     }
 
-    if (stack->status == DELETED_STATUS)
+    if (stack->status == STK_DEL_STATUS)
     {
-        err |= masks[1];
+        err |= STK_N_EXIST_ERR;
         return err;
     }
 
-    if (stack->status == ALR_INIT_STATUS)
+    if (stack->status == STK_ALR_INIT_STATUS)
     {
-        err |= masks[2];
+        err |= STK_ALR_INIT_ERR;
         return err;
     }
 
     if (stack == NULL)
-        err |= masks[3];
+        err |= STK_IS_NULL_ERR;
 
     if (stack->size > stack->capacity)
-        err |= masks[4];
+        err |= STK_OVERFLOW_ERR;
 
     if (stack->capacity < MIN_CAPACITY)
-        err |= masks[5];
+        err |= STK_UNDERFLOW_ERR;
 
-    if (stack->size < 0)
-        err |= masks[6];
+    if (!CheckCanaries(stack))
+        err |= CHANGED_CANARY_ERR;
 
     if (stack->data == nullptr)
-        err |= masks[7];
+        err |= STK_DATA_IS_NULL_ERR;
 
     if (err)
     {
-        stack->status = ERROR_STATUS;
+        stack->status = STK_ERR_STATUS;
         SetStackHash(stack);
     }
 
     return err;
 }
 
-void DecodeError(int error)
+void StackPrintError(size_t error, size_t* mask, const char* error_msg)
 {
-    for (int i = 0; i < 8; i++)
-        if (error & masks[i])
-            fprintf(stderr, "%s", ERRORS[i]);
+    if (error & *mask)
+        printf("%s", error_msg);
+
+    *mask <<= 1;
+}
+
+void StackDecodeErrors(size_t error)
+{
+    size_t mask = 1;
+
+    StackPrintError(error, &mask, KYEL "STACK WASN'T INITIALIZED\n"                  KNRM);
+    StackPrintError(error, &mask, KYEL "STACK DOESN'T EXIST (DELETED)\n"             KNRM);
+    StackPrintError(error, &mask, KYEL "STACK WAS ALREADY INITIALIZED\n"             KNRM);
+    StackPrintError(error, &mask, KYEL "STACK EQUALS NULL\n"                         KNRM);
+    StackPrintError(error, &mask, KYEL "STACK OVERFLOW (SIZE > CAPACITY)\n"          KNRM);
+    StackPrintError(error, &mask, KYEL "STACK UNDERFLOW (CAPACITY < MIN_CAPACITY)\n" KNRM);
+    StackPrintError(error, &mask, KYEL "ONE OF CANARIES WAS CHANGED\n"               KNRM);
+    StackPrintError(error, &mask, KYEL "DATA EQUALS NULL\n"                          KNRM);
+}
+
+void StackDecodeStatus(size_t status)
+{
+    if(status == STK_OK_STATUS)
+        printf("%s", KGRN "OK"                 KNRM);
+
+    else if(status == STK_DEL_STATUS)
+        printf("%s", KGRN "DELETED"            KNRM);
+
+    else if(status == STK_N_INIT_STATUS)
+        printf("%s", KGRN "NOT INITIALIZED"    KNRM);
+
+    else if(status == STK_ERR_STATUS)
+        printf("%s", KGRN "ERROR"              KNRM);
+
+    else if(status == STK_ALR_INIT_STATUS)
+        printf("%s", KGRN "ALREDY INITIALIZED" KNRM);
+
+    else if(status == STK_DAMAGED_STATUS)
+        printf("%s", KGRN "DAMAGED"            KNRM);
 }
 
 void StackDump(Stack* stack)
 {
     ASSERT(stack != NULL);
 
-    printf("Stack[%p] (%s) \"%s\" at \"%s\"(%d)  \n", stack, stack->status, stack->info.name, stack->info.filename, stack->info.line);
+    printf("Stack[%p] (", (void *) stack);
+    StackDecodeStatus(stack->status);
+    printf(") \"%s\" at \"%s\"(%d)               \n", stack->info.name, stack->info.filename, stack->info.line);
     printf("{                                    \n");
     printf("    size     = %lu                   \n", stack->size);
     printf("    capacity = %lu                   \n", stack->capacity);
-    printf("    data[%p]                         \n", &(stack->data));
+    printf("    data[%p]                         \n", (void *) &(stack->data));
     printf("    {                                \n");
 
     Elem_t poison = (Elem_t) NULL;
     poisoned(&poison);
 
-    for (int i = 0; i < stack->capacity; i++)
+    for (size_t i = 0; i < stack->capacity; i++)
 
         if (stack->data[i] != poison)
         {
-            printf("        *[%d] = " KMAG, i);
+            printf("        *[%ld] = " KMAG, i);
             print_stack_elem(stack->data[i]);
             printf(KNRM "\n");
         }
 
         else
         {
-            printf("         [%d] = " KBLU, i);
+            printf("         [%ld] = " KBLU, i);
             print_stack_elem(stack->data[i]);
             printf(" (poison)\n" KNRM);
         }
@@ -221,12 +278,12 @@ void StackCtor_(Stack* stack)
 
     SetStackHash(stack);
 
-    if (stack->status == OK_STATUS)
-        stack->status = ALR_INIT_STATUS;
+    if (stack->status == STK_OK_STATUS)
+        stack->status = STK_ALR_INIT_STATUS;
 
-    int err = StackError(stack);
+    size_t err = StackError(stack);
 
-    if (!(err & INIT_MASK))
+    if (!(err & STK_INIT_MASK))
     {
         stack->data     = (Elem_t*) calloc(MIN_CAPACITY, sizeof(Elem_t));
         stack->capacity = MIN_CAPACITY;
@@ -237,11 +294,11 @@ void StackCtor_(Stack* stack)
 
         FillPoisons(stack, 0);
 
-        stack->status = OK_STATUS;
+        stack->status = STK_OK_STATUS;
     }
 
-    else if (!(err & DEL_MASK))
-        stack->status = N_INIT_STATUS;
+    else if (!(err & STK_DEL_MASK))
+        stack->status = STK_N_INIT_STATUS;
 
     SetStackHash(stack);
 
@@ -253,13 +310,13 @@ void StackDtor(Stack* stack)
     ASSERT(stack != NULL);
     ASSERT_OK(stack);
 
-    if (stack->status != DELETED_STATUS)
+    if (stack->status != STK_DEL_STATUS)
     {
         free(stack->data);
         stack->data     = (Elem_t*) NULL;
         stack->size     = 0;
         stack->capacity = 0;
-        stack->status   = DELETED_STATUS;
+        stack->status   = STK_DEL_STATUS;
     }
 
     SetStackHash(stack);
@@ -271,6 +328,8 @@ void StackRealloc(Stack* stack, size_t capacity)
 
     stack->capacity = capacity;
     stack->data = (Elem_t*) realloc(stack->data, capacity * sizeof(Elem_t));
+
+    ASSERT(stack->data != NULL);
 
     SetStackHash(stack);
 }
@@ -308,8 +367,10 @@ void StackPush(Stack* stack, const Elem_t value)
     ASSERT_OK(stack);
 
     if (stack->size >= stack->capacity)
+    {
         StackRealloc(stack, stack->capacity * 2);
         FillPoisons(stack, stack->size + 1);
+    }
 
     stack->data[stack->size++] = value;
 

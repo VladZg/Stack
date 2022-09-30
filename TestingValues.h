@@ -2,7 +2,7 @@
 #define TESTINGVALUES_H
 
 #define TEST_INT   rand()
-#define TEST_FLOAT 0.0001  * TEST_INT
+#define TEST_FLOAT (0.0001  * TEST_INT)
 
 char        TEST_CHAR       = 't';
 
