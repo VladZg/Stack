@@ -2,7 +2,6 @@
 #define DEFINES_H
 
 #include "Config.h"
-#include "Stack.h"
 #include "Log.h"
 
 # ifndef NDEBUG

@@ -69,4 +69,9 @@ float       float_poisoned      = 13.37;
 #define INIT_MASK         254
 #define DEL_MASK          253
 
+// enum {
+//       LEFT_CANARY  = 0xCFFEE,
+//       RIGHT_CANARY = 0xCFFE
+//      } canaries;
+
 #endif
