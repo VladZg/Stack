@@ -3,6 +3,7 @@
 
 #include "Config.h"
 #include "Log.h"
+#include "HashCounters.h"
 #include "Defines.h"
 
 struct StackInfo
@@ -19,23 +20,60 @@ struct Stack
     size_t      capacity;
     StackInfo   info;
     const char* status = N_INIT_STATUS;
-    size_t      hash;
+    uint32_t    hash;
 };
 
-// void   DecodeError  (int error);
-// void   FillPoisons  (Stack* stack, size_t start_index);
-// int    StackError   (Stack* stack);
-// void   StackDump    (Stack* stack);
-// void   StackCtor_   (Stack* stack);
-// void   StackDtor    (Stack* stack);
-// void   StackRealloc (Stack* stack, int direction);
-Elem_t StackPop     (Stack* stack, int* err = NULL);
-// int    CheckElem    (Stack* stack, Elem_t value);
-// void   StackPush    (Stack* stack, const Elem_t value);
-// size_t Hash         (const void* obj, size_t n);
-// void   SetStackHash (Stack* stack);
-// void   CheckHash    (Stack* stack);
 
+int    StackError   (Stack* stack);
+void   DecodeError  (int error);
+void   StackDump    (Stack* stack);
+Elem_t StackPop     (Stack* stack, int* err = NULL);
+
+
+#ifndef N_HASH_PROTECTION
+
+void SetStackHash(Stack* stack)
+{
+    ASSERT(stack != NULL);
+
+    stack->hash = 0;
+    stack->hash = HashCounter((const void*) stack, (uint32_t) sizeof(Stack), HASH_SEED);
+}
+
+void CheckHash(Stack* stack)
+{
+    ASSERT(stack != NULL);
+
+    uint32_t hash_temp = stack->hash;
+
+    SetStackHash(stack);
+
+    if (stack->hash - hash_temp)
+    {
+        stack->status = DAMAGED_STATUS;
+        fprintf(stderr, "%s", ERRORS[8]);
+        DecodeError(StackError(stack));
+        StackDump(stack);
+        abort();
+    }
+}
+
+#else
+void SetStackHash(Stack* stack)
+{
+    ;
+}
+
+void CheckHash(Stack* stack)
+{
+    ;
+}
+
+#endif
+
+#ifndef N_CANARY_PROTECTION
+#else
+#endif
 
 void print_stack_elem(int elem)
 {
@@ -77,89 +115,6 @@ void poisoned(char** elem)
 {
     *elem = char_ptr_poisoned;
 }
-
-
-// #ifndef NDEBUG
-
-size_t Hash(const void* obj, size_t len)
-{
-    size_t hash = 0;
-    const char* obj_start = (const char*) obj;
-
-// size_t c1 = 0xcc9e2d51;
-// size_t c2 = 0x1b873593;
-// size_t r1 = 15;
-// size_t r2 = 13;
-// size_t m  = 5;
-// size_t n  = 0xe6546b64;
-
-    char k = (char) NULL;
-
-    for (size_t i = 0; i < len; i++)
-    {
-//         k = (char) obj_start[i];
-//
-//         k *= 0xcc9e2d51;
-//         k = (k << 15) | (k >> 17);
-//         k *= 0x1b873593;
-//
-//         hash = (hash << 13) | (hash >> 19);
-//         hash = hash * 5 + 0xe6546b64;
-
-        hash += (char) obj_start[i];
-        hash += (hash << 10);
-        hash ^= (hash >> 6);
-    }
-
-    hash += (hash << 3);
-    hash ^= (hash >> 11);
-    hash += (hash << 15);
-//     k *= 0xcc9e2d51;
-//     k = (k << 15) | (k >> 17);
-//     k *= 0x1b873593;
-//
-//     hash ^= n;
-//
-//     hash ^= (hash >> 16);
-//     hash *= 0x85ebca6b;
-//     hash &= (hash >> 13);
-//     hash *= 0xc2b2ae35;
-//     hash &= (hash >> 16);
-
-    return hash;
-}
-
-void SetStackHash(Stack* stack)
-{
-    stack->hash = 0;
-    stack->hash = Hash((const void*) stack, sizeof(Stack));
-}
-
-void CheckHash(Stack* stack)
-{
-    size_t hash_temp = stack->hash;
-
-    SetStackHash(stack);
-
-    // printf("%ld VS %ld\n", hash_temp, stack->hash);
-
-    if (stack->hash - hash_temp)
-    {
-        fprintf(stderr, KRED "ERROR! STACK IS DAMAGED!!!\n" KNRM);
-        abort();
-    }
-}
-
-// #else
-//
-// size_t Hash(const void* obj, size_t len)
-// {
-//     return 0;
-// }
-// void   SetStackHash(Stack* stack);
-// void   CheckHash(Stack* stack);
-//
-// #endif
 
 
 int StackError(Stack* stack)
@@ -212,7 +167,7 @@ void DecodeError(int error)
 {
     for (int i = 0; i < 8; i++)
         if (error & masks[i])
-            fprintf(stderr, "%s", errors[i]);
+            fprintf(stderr, "%s", ERRORS[i]);
 }
 
 void StackDump(Stack* stack)
@@ -301,9 +256,9 @@ void StackDtor(Stack* stack)
     if (stack->status != DELETED_STATUS)
     {
         free(stack->data);
-        stack->data     = (Elem_t) NULL;
-        stack->size     = (size_t) NULL;
-        stack->capacity = (size_t) NULL;
+        stack->data     = (Elem_t*) NULL;
+        stack->size     = 0;
+        stack->capacity = 0;
         stack->status   = DELETED_STATUS;
     }
 
