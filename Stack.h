@@ -15,14 +15,14 @@ struct StackInfo
 
 struct Stack
 {
-    // size_t      left_canary;
+    size_t    left_canary;
     Elem_t*   data;
     size_t    size;
     size_t    capacity;
     StackInfo info;
     size_t    status = STK_N_INIT_STATUS;
     uint32_t  hash;
-    // size_t      right_canary;
+    size_t    right_canary;
 };
 
 void   print_stack_elem  (int   elem);
@@ -48,6 +48,7 @@ void   StackDump         (Stack* stack);
 void   StackCtor_        (Stack* stack);
 void   StackDtor         (Stack* stack);
 void   StackRealloc      (Stack* stack, size_t capacity);
+// void   StackResize       (Stack* stack, size_t key);
 Elem_t StackPop          (Stack* stack, int* err = NULL);
 void   StackPush         (Stack* stack, const Elem_t value);
 

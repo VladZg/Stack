@@ -23,23 +23,23 @@ int main()
 
     // WriteLog("LOL AHAHA!\n");
 
-    // StackPushN(&stk1, 41);
+    // StackPushN(&stk1, 11);
+    // stk1.left_canary = 9;
+    // StackDump(&stk1);
     // stk1.capacity = 3;
     // stk1.size = 6;
     // stk1.data = NULL;
 
     // StackPushN(&stk1, 12);
-    // StackPush(&stk1, TEST_INT);
-    // StackDump(&stk1);
-    // StackPopN(&stk1, 30);
-    // StackDump(&stk1);
+
+    // StackPopN(&stk1, 10);
 
     // stk1.size = 3;
-    // StackPopN(&stk1, 56);
+    StackPopN(&stk1, 56);
     // StackPush(&stk1, TEST_CHAR_PTR);
     // FillStack(&stk1);
     // StackPush(&stk1, TEST_CHAR_PTR);
-    // StackDump(&stk1);
+    StackDump(&stk1);
 
     StackDtor(&stk1);
     StackDtor(&stk2);

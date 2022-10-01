@@ -61,7 +61,7 @@ void OpenLog() {}
 
 void WriteLog(const char* data)
 {
-    fputs(data, stderr);
+    fprintf(stderr, "%s", data);
 }
 
 void CloseLog() {}

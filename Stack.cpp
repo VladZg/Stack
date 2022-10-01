@@ -14,6 +14,7 @@ void SetStackHash(Stack* stack)
     ASSERT(stack != NULL);
 
     stack->hash = 0;
+    // stack->hash = MurHash((const void*) (stack - sizeof(canary_t)), (uint32_t) (sizeof(Stack) - 2 * sizeof(canary_t)), HASH_SEED);
     stack->hash = MurHash((const void*) stack, (uint32_t) sizeof(Stack), HASH_SEED);
 }
 
@@ -41,6 +42,7 @@ void CheckHash(Stack* stack)
 }
 
 #else
+
 void SetStackHash(Stack* stack) {}
 void CheckHash(Stack* stack) {}
 
@@ -260,9 +262,11 @@ void StackCtor_(Stack* stack)
 
     if (!(err & STK_INIT_MASK))
     {
-        stack->data     = (Elem_t*) calloc(MIN_CAPACITY, sizeof(Elem_t));
-        stack->capacity = MIN_CAPACITY;
-        stack->size     = (size_t) 0;
+        stack->data         = (Elem_t*) calloc(MIN_CAPACITY, sizeof(Elem_t));
+        stack->capacity     = MIN_CAPACITY;
+        stack->size         = (size_t) 0;
+        stack->left_canary  = LEFT_CANARY;
+        stack->right_canary = RIGHT_CANARY;
 
         Elem_t poison = (Elem_t) NULL;
         poisoned(&poison);
@@ -309,6 +313,36 @@ void StackRealloc(Stack* stack, size_t capacity)
     SetStackHash(stack);
 }
 
+// void StackResize(Stack* stack, size_t key)
+// {
+//     switch (key)
+//     {
+//         case PUSH_RESIZE_KEY:
+//         {
+//             StackRealloc(stack, stack->capacity * 2);
+//             FillPoisons(stack, stack->size + 1);
+//         }
+//
+//         case POP_RESIZE_KEY:
+//         {
+//             size_t new_capacity = stack->capacity;
+//
+//             switch (stack->size)
+//             {
+//                 case 1:
+//                     new_capacity = MIN_CAPACITY;
+//
+//                 default:
+//                     if ((stack->capacity / stack->size >= 4) && (stack->capacity / 4 >= MIN_CAPACITY))
+//                         new_capacity = stack->capacity / 4;
+//             }
+//
+//             stack->size--;
+//             StackRealloc(stack, new_capacity);
+//         }
+//     }
+// }
+
 Elem_t StackPop(Stack* stack, int* err)
 {
     ASSERT_OK(stack);
@@ -323,8 +357,22 @@ Elem_t StackPop(Stack* stack, int* err)
         popped = stack->data[stack->size - 1];
         stack->data[stack->size - 1] = poison;
 
-        if ((stack->capacity / --stack->size >= 4) && (stack->capacity / 4 >= MIN_CAPACITY))
-            StackRealloc(stack, stack->capacity / 4);
+        // StackResize(stack, POP_RESIZE_KEY);
+
+        size_t new_capacity = stack->capacity;
+
+        switch (stack->size)
+        {
+            case 1:
+                new_capacity = MIN_CAPACITY;
+
+            default:
+                if ((stack->capacity / stack->size >= 4) && (stack->capacity / 4 >= MIN_CAPACITY))
+                    new_capacity = stack->capacity / 4;
+        }
+
+        stack->size--;
+        StackRealloc(stack, new_capacity);
     }
 
     else if (err != NULL)
@@ -343,6 +391,8 @@ void StackPush(Stack* stack, const Elem_t value)
 
     if (stack->size >= stack->capacity)
     {
+        // StackResize(stack, PUSH_RESIZE_KEY);
+
         StackRealloc(stack, stack->capacity * 2);
         FillPoisons(stack, stack->size + 1);
     }

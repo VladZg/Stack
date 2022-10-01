@@ -5,9 +5,9 @@
 
 // #define RELEASE_MODE
 // #define NDEBUG
-#define NLOGGING
+// #define NLOGGING
 // #define N_HASH_PROTECTION
-#define N_CANARY_PROTECTION
+// #define N_CANARY_PROTECTION
 
 #ifdef RELEASE_MODE
 

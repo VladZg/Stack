@@ -25,7 +25,10 @@ enum {
 
       UNDEFINED_LINE       = -1,
       MIN_CAPACITY         = 10,
-      HASH_SEED            = 0
+      HASH_SEED            = 0,
+
+      PUSH_RESIZE_KEY      = 1,
+      POP_RESIZE_KEY       = 0
      };
 
 const  int   int_poisoned        = 0xBADDED;
