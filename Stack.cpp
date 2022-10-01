@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdint.h>
+
 #include "Config.h"
 #include "HashCounters.h"
 #include "Defines.h"
