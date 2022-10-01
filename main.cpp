@@ -23,14 +23,15 @@ int main()
 
     // WriteLog("LOL AHAHA!\n");
 
-    // StackPushN(&stk1, 19);
-    // StackDump(&stk1);
+    // StackPushN(&stk1, 41);
     // stk1.capacity = 3;
     // stk1.size = 6;
     // stk1.data = NULL;
 
     // StackPushN(&stk1, 12);
     // StackPush(&stk1, TEST_INT);
+    // StackDump(&stk1);
+    // StackPopN(&stk1, 30);
     // StackDump(&stk1);
 
     // stk1.size = 3;

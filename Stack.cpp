@@ -323,7 +323,7 @@ Elem_t StackPop(Stack* stack, int* err)
         popped = stack->data[stack->size - 1];
         stack->data[stack->size - 1] = poison;
 
-        if ((stack->capacity / stack->size-- >= 4) && (stack->capacity / 4 > MIN_CAPACITY))
+        if ((stack->capacity / --stack->size >= 4) && (stack->capacity / 4 >= MIN_CAPACITY))
             StackRealloc(stack, stack->capacity / 4);
     }
 

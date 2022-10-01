@@ -23,9 +23,6 @@ enum {
       STK_INIT_MASK        = 254,
       STK_DEL_MASK         = 253,
 
-      LEFT_CANARY          = 0xBCBCBC,
-      RIGHT_CANARY         = 0xCBCBCB,
-
       UNDEFINED_LINE       = -1,
       MIN_CAPACITY         = 10,
       HASH_SEED            = 0
@@ -35,6 +32,11 @@ const  int   int_poisoned        = 0xBADDED;
 const  char  char_ptr_poisoned[] = "poisoned";
 const  char  char_poisoned       = '\?';
 const  float float_poisoned      = 13.37;
+
+typedef const int canary_t;
+
+canary_t LEFT_CANARY  = 0xBCBCBC;
+canary_t RIGHT_CANARY = 0xCBCBCB;
 
 static char  undefined_stk_name[]    = KRED "?" KNRM;
 
