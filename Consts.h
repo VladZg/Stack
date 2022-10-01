@@ -19,6 +19,7 @@ enum {
       STK_UNDERFLOW_ERR    = 32,
       CHANGED_CANARY_ERR   = 64,
       STK_DATA_IS_NULL_ERR = 128,
+      MASK_SHIFT           = 1,
 
       STK_INIT_MASK        = 254,
       STK_DEL_MASK         = 253,
@@ -44,5 +45,6 @@ canary_t RIGHT_CANARY = 0xCBCBCB;
 static char  undefined_stk_name[]    = KRED "?" KNRM;
 
 #define UNDEFINED_STK_NAME undefined_stk_name
+// #define LOG_FILE_NAME "Log1.txt"
 
 #endif

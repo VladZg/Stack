@@ -1,6 +1,7 @@
+#include "Config.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "Config.h"
+#include <stdarg.h>
 #include "time.h"
 
 #define LOG_FILE_NAME_DEFAULT "Log.txt"
@@ -33,9 +34,14 @@ FILE* OpenLog()
 extern FILE* LOG_FILE;
 FILE* LOG_FILE  = OpenLog();
 
-void WriteLog(const char* data)
+void WriteLog(const char* format_data, ...)
 {
-    fprintf(LOG_FILE, "%s", data);
+    va_list args;
+    va_start(args, format_data);
+
+    vfprintf(LOG_FILE, format_data, args);
+
+    va_end(args);
 }
 
 void CloseLog()
@@ -59,9 +65,14 @@ int LOG_EXIT = atexit(CloseLog);
 
 void OpenLog() {}
 
-void WriteLog(const char* data)
+void WriteLog(const char* format_data, ...)
 {
-    fprintf(stderr, "%s", data);
+    va_list args;
+    va_start(args, format_data);
+
+    vfprintf(stderr, format_data, args);
+
+    va_end(args);
 }
 
 void CloseLog() {}

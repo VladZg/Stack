@@ -6,7 +6,7 @@
 #include "HashCounters.h"
 #include "Defines.h"
 
-struct StackInfo
+struct Info
 {
     char*       name     = UNDEFINED_STK_NAME;
     const char* filename = __FILE__;
@@ -15,14 +15,17 @@ struct StackInfo
 
 struct Stack
 {
-    size_t    left_canary;
-    Elem_t*   data;
-    size_t    size;
-    size_t    capacity;
-    StackInfo info;
-    size_t    status = STK_N_INIT_STATUS;
-    uint32_t  hash;
-    size_t    right_canary;
+    size_t   left_canary;
+
+    Elem_t*  data;
+    size_t   size;
+    size_t   capacity;
+
+    Info     info;
+    size_t   status = STK_N_INIT_STATUS;
+    uint32_t hash;
+
+    size_t   right_canary;
 };
 
 void   print_stack_elem  (int   elem);
@@ -36,19 +39,18 @@ void   poisoned          (char*  elem);
 void   poisoned          (char** elem);
 
 void   SetStackHash      (Stack* stack);
-void   CheckHash         (Stack* stack);
+void   CheckStackHash    (Stack* stack);
 size_t CheckCanaries     (Stack* stack);
 size_t StackError        (Stack* stack);
-void   StackPrintError   (size_t error, size_t* mask, const char* error_msg);
 void   StackDecodeErrors (size_t error);
 void   StackDecodeStatus (size_t status);
 
 void   FillPoisons       (Stack* stack, size_t start_index);
-void   StackDump         (Stack* stack);
+void   StackDump_        (Stack* stack);
 void   StackCtor_        (Stack* stack);
 void   StackDtor         (Stack* stack);
 void   StackRealloc      (Stack* stack, size_t capacity);
-// void   StackResize       (Stack* stack, size_t key);
+void   StackResize       (Stack* stack, size_t key);
 Elem_t StackPop          (Stack* stack, int* err = NULL);
 void   StackPush         (Stack* stack, const Elem_t value);
 

@@ -1,7 +1,6 @@
+#include "Config.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "Config.h"
 #include "Log.h"
 #include "Defines.h"
 #include "Stack.h"
@@ -21,25 +20,25 @@ int main()
     StackCtor(stk1);
     // StackCtor(stk1);
 
-    // WriteLog("LOL AHAHA!\n");
-
     // StackPushN(&stk1, 11);
     // stk1.left_canary = 9;
     // StackDump(&stk1);
-    // stk1.capacity = 3;
-    // stk1.size = 6;
+    stk1.capacity = 3;
+    stk1.size = 6;
     // stk1.data = NULL;
 
-    // StackPushN(&stk1, 12);
 
-    // StackPopN(&stk1, 10);
+    StackPushN(&stk1, 41);
+
+    // StackPopN(&stk1, 0);
 
     // stk1.size = 3;
-    StackPopN(&stk1, 56);
+    // StackPopN(&stk1, 56);
     // StackPush(&stk1, TEST_CHAR_PTR);
     // FillStack(&stk1);
+    // stk1.data = NULL;
     // StackPush(&stk1, TEST_CHAR_PTR);
-    StackDump(&stk1);
+    // StackDump(&stk1);
 
     StackDtor(&stk1);
     StackDtor(&stk2);

@@ -1,8 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "Consts.h"
-
 // #define RELEASE_MODE
 // #define NDEBUG
 // #define NLOGGING
@@ -18,6 +16,8 @@
 
 #endif
 
-typedef int Elem_t;
+#include "Consts.h"
+
+typedef float Elem_t;
 
 #endif
