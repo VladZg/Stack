@@ -18,6 +18,6 @@
 
 #endif
 
-int typedef Elem_t;
+typedef int Elem_t;
 
 #endif

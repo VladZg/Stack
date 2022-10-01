@@ -19,15 +19,18 @@ int main()
 
     StackCtor(stk2);
     StackCtor(stk1);
+    // StackCtor(stk1);
 
-    StackPushN(&stk1, 19);
-    StackDump(&stk1);
+    // WriteLog("LOL AHAHA!\n");
+
+    // StackPushN(&stk1, 19);
+    // StackDump(&stk1);
     // stk1.capacity = 3;
     // stk1.size = 6;
+    // stk1.data = NULL;
 
     // StackPushN(&stk1, 12);
     // StackPush(&stk1, TEST_INT);
-
     // StackDump(&stk1);
 
     // stk1.size = 3;
@@ -40,6 +43,7 @@ int main()
     StackDtor(&stk1);
     StackDtor(&stk2);
 
+    // StackCtor(stk1);
     // StackDump(&stk1);
     // StackDump(&stk2);
 
