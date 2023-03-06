@@ -1,10 +1,10 @@
-#include "Config.h"
+#include "../Include/Config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include "time.h"
+#include "./time.h"
 
-#define LOG_FILE_NAME_DEFAULT "Log.txt"
+#define LOG_FILE_NAME_DEFAULT "./Log/Log.txt"
 
 #ifndef LOG_FILE_NAME
 #define LOG_FILE_NAME LOG_FILE_NAME_DEFAULT

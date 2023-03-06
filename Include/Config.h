@@ -5,7 +5,7 @@
 // #define NDEBUG
 // #define NLOGGING
 // #define N_HASH_PROTECTION
-// #define N_CANARY_PROTECTION
+#define N_CANARY_PROTECTION
 
 #ifdef RELEASE_MODE
 
@@ -16,7 +16,7 @@
 
 #endif
 
-#include "Consts.h"
+#include "./Consts.h"
 
 typedef float Elem_t;
 

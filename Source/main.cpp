@@ -1,19 +1,19 @@
-#include "Config.h"
+#include "../Include/Config.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "Log.h"
-#include "Defines.h"
-#include "Stack.h"
+#include "../Include/Log.h"
+#include "../Include/Defines.h"
+#include "../Include/Stack.h"
 
-#include "TestingValues.h"
-#include "TestingFunctions.h"
+#include "../Include/TestingValues.h"
+#include "../Include/TestingFunctions.h"
 
 int main()
 {
     Stack stk1 = {};
     Stack stk2 = {};
 
-    // StackDump(&stk1);
+    StackDump(&stk1);
     // StackDump(&stk2);
 
     StackCtor(stk2);
@@ -23,8 +23,8 @@ int main()
     // StackPushN(&stk1, 11);
     // stk1.left_canary = 9;
     // StackDump(&stk1);
-    stk1.capacity = 3;
-    stk1.size = 6;
+    // stk1.capacity = 3;
+    // stk1.size = 6;
     // stk1.data = NULL;
 
 
@@ -38,7 +38,7 @@ int main()
     // FillStack(&stk1);
     // stk1.data = NULL;
     // StackPush(&stk1, TEST_CHAR_PTR);
-    // StackDump(&stk1);
+    StackDump(&stk1);
 
     StackDtor(&stk1);
     StackDtor(&stk2);
