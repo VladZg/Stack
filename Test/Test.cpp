@@ -5,8 +5,8 @@
 #include "../Include/Defines.h"
 #include "../Include/Stack.h"
 
-#include "../Include/TestingValues.h"
-#include "../Include/TestingFunctions.h"
+#include "./TestingValues.h"
+#include "./TestingFunctions.h"
 
 int main()
 {

@@ -1,8 +1,8 @@
 #ifndef TESTINGFUNCTIONS_H
 #define TESTINGFUNCTIONS_H
 
-#include "./Config.h"
-#include "./Stack.h"
+#include "../Include/Config.h"
+#include "../Include/Stack.h"
 
 #ifndef RELEASE_MODE
 
